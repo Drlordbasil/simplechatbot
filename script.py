@@ -12,6 +12,7 @@ user_prompts = {
     "tell me a joke": "Why don't scientists trust atoms? Because they make up everything!"
 }
 
+
 class ChatBot(discord.Client):
     async def on_ready(self):
         print(f"We have logged in as {self.user}")
@@ -25,13 +26,15 @@ class ChatBot(discord.Client):
         if response:
             await message.channel.send(response)
 
+
 def main():
     bot_token = os.getenv("BOT_TOKEN")
     if not bot_token:
         raise ValueError("Please set the BOT_TOKEN environment variable.")
-    
+
     bot = ChatBot()
     bot.run(bot_token)
+
 
 if __name__ == "__main__":
     main()
