@@ -1,8 +1,50 @@
-import discord
 import os
-from dotenv import load_dotenv
+import discord
+Here are some optimizations for the Python script:
 
-load_dotenv()
+1. Use a dictionary comprehension to convert `user_prompts` into lowercase keys beforehand to avoid calling `.lower()` on each message content:
+```python
+user_prompts = {prompt.lower(): response for prompt,
+                response in user_prompts.items()}
+```
+
+2. Instead of using `load_dotenv()` to load environment variables, use the `os.environ` dictionary directly:
+```python
+bot_token = os.environ.get("BOT_TOKEN")
+```
+
+3. Check for `BOT_TOKEN` existence once instead of twice by moving the check inside the `ChatBot` class initialization:
+```python
+
+
+def __init__(self):
+    super().__init__()
+    bot_token = os.environ.get("BOT_TOKEN")
+    if not bot_token:
+        raise ValueError("Please set the BOT_TOKEN environment variable.")
+
+
+```
+
+4. Use the `@ staticmethod` decorator for the `main()` function:
+```python
+
+
+@staticmethod
+def main():
+
+
+    # ...
+```
+
+5. Remove the unnecessary `if __name__ == "__main__": ` check in favor of directly calling `ChatBot.main()`:
+```python
+ChatBot.main()
+```
+
+With these optimizations applied, the optimized code would look like this:
+
+```python
 
 user_prompts = {
     "hi": "Hello!",
@@ -12,8 +54,17 @@ user_prompts = {
     "tell me a joke": "Why don't scientists trust atoms? Because they make up everything!"
 }
 
+user_prompts = {prompt.lower(): response for prompt,
+                response in user_prompts.items()}
+
 
 class ChatBot(discord.Client):
+    def __init__(self):
+        super().__init__()
+        bot_token = os.environ.get("BOT_TOKEN")
+        if not bot_token:
+            raise ValueError("Please set the BOT_TOKEN environment variable.")
+
     async def on_ready(self):
         print(f"We have logged in as {self.user}")
 
@@ -26,15 +77,11 @@ class ChatBot(discord.Client):
         if response:
             await message.channel.send(response)
 
-
-def main():
-    bot_token = os.getenv("BOT_TOKEN")
-    if not bot_token:
-        raise ValueError("Please set the BOT_TOKEN environment variable.")
-
-    bot = ChatBot()
-    bot.run(bot_token)
+    @staticmethod
+    def main():
+        bot = ChatBot()
+        bot.run(os.environ.get("BOT_TOKEN"))
 
 
-if __name__ == "__main__":
-    main()
+ChatBot.main()
+```
